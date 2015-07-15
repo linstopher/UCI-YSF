@@ -10,8 +10,11 @@ public class AgentModel
 {
     public int[][] grid;
     public int x, y;
+    public int numStartCells;
+    
     private double probDeath;
-    private double probDiv;
+    private double probDivS;
+    private double probDivPM;
     private double probDifferentiate;
     private double probEvolve;
     
@@ -21,16 +24,20 @@ public class AgentModel
     
     private String data;
     
-    public AgentModel(int gridX, int gridY, boolean pM, boolean diff, boolean evolve)
+    public AgentModel(int gridX, int gridY, int numSC, boolean pM, boolean diff, boolean evolve)
     {
         x = gridX;
         y = gridY; //Change y length if not using a square grid
         grid = new int[x][y];
+        numStartCells = numSC;
         
-        probDeath = 0.01; //Probability constants
-        probDiv = 0.97;    //Can be changed
-        probDifferentiate = 0.4; //~0.898 - 0.91 for PM, ~0.47 for S
-        probEvolve = 0.01;
+        probDeath = 0.01; //probability of cell dying (0.01 = 1% chance of death)
+        probDivS = 0.3; //probability of cell dividing (0.97 = 97% chance of div)
+        probDivPM = 0.97;
+            //0.97 for PM straight line
+            //0.3 for spatial semi-straight line
+        probDifferentiate = 0.4; //probability of cell differentiating (0.4 = 40% chance of diff)
+        probEvolve = 0.001; //probability of diff cell evolving (0.01 = 1% chance of mut)
         
         perfectMixing = pM;
         differentiating = diff;
@@ -38,12 +45,12 @@ public class AgentModel
         
         data = "";
         
-        createNewRoot(4);
+        createNewRoot(numStartCells);
     }
     
-    public static void main(int gridSize, boolean perfectMixing, boolean differentiating, boolean evolving)
+    public static void main(int gridSize, int numStartCells, boolean perfectMixing, boolean differentiating, boolean evolving)
     {
-        AgentModel test = new AgentModel(gridSize, gridSize, perfectMixing, differentiating, evolving);
+        AgentModel test = new AgentModel(gridSize, gridSize, numStartCells, perfectMixing, differentiating, evolving);
         if (perfectMixing)
         {
             System.out.println("PERFECT MIXING SIMULATION\n");
@@ -78,17 +85,17 @@ public class AgentModel
             
             if (answer.equals("y") || answer.equals("yes"))
             {
-                String filename = "TumorModel_" ;
+                String filename = "TumorModel-" ;
                     if (differentiating)
-                        filename += "diff_";
+                        filename += "diff-";
                     else
-                        filename += "undiff_";
+                        filename += "undiff-";
                 
                     if (perfectMixing)
                         filename += "PM";
                     else
                         filename += "S";
-                    filename += ("_" + gridSize);
+                    filename += ("-" + gridSize);
                     //filename += System.currentTimeMillis();
                     //filename += "_" + test.probDeath;
                     //filename += "_" + test.probDiv;
@@ -107,7 +114,7 @@ public class AgentModel
         {
             FileWriter fw = new FileWriter(filename + ".txt");
             BufferedWriter writer = new BufferedWriter(fw);
-            writer.write("#StageNum, CellCount, Sqrt/log, StemCount, DiffCount");
+            writer.write("#StageNum, CellCount, Sqrt/log, StemCount, DiffCount, MutantCount");
             writer.write(getData());
             writer.close();
         }
@@ -209,36 +216,6 @@ public class AgentModel
         }
     }
     
-    public void createNewRoot(int diameter, int centerX, int centerY)
-    {
-        int startCol, endCol, startRow, endRow;
-        if (diameter != 1)
-        {
-            startCol = centerX - ((diameter - 1)/2);
-            endCol = centerX + ((diameter - 1)/2);
-        
-            startRow = centerY - ((diameter - 1)/2);
-            endRow = centerY + ((diameter - 1)/2);
-        }
-        else
-        {
-           startCol = centerX;
-           endCol = startCol;
-           
-           startRow = centerY;
-           endRow = startRow;
-        }
-        
-        for (int c = startCol; c <= endCol; c++)
-        {
-            for (int r = startRow; r <= endRow; r++)
-            {
-                grid[r][c] = 1;
-            }
-            
-        }
-    }
-    
     public void showGrid()
     {
         for (int[] numArray : grid)
@@ -265,28 +242,30 @@ public class AgentModel
                 int randC = (int)(Math.random() * x);
             
                 updateSq(randR, randC);
-            
-                /*try 
-                 * {
-                 *     Thread.sleep(1000);                 //1000 milliseconds is one second.
-                 *  } 
-                 *  catch(InterruptedException ex) 
-                 *  {
-                 *      Thread.currentThread().interrupt();
-                 *  }*/
             }
         }
         
         System.out.println("Stage " + stageNum);
             data += ("\n" + stageNum + " ");
-        System.out.println("Total cells: " + getTotalCancerCells() + "\n");
-            data += ("" + getTotalCancerCells() + " " + getThirdColumnData() + " " + getStemCells() + " " + getDiffCells());
+        System.out.println("Total cells: " + getTotalCancerCells());
+            data += ("" + getTotalCancerCells() + " " + getThirdColumnData() + " " + getStemCells() + " " + getDiffCells() + " " + getMutants());
+        System.out.println("Mutants: " + getMutants() + "\n");
         showGrid();
         System.out.println("\n============================================");
     }
     
     public void updateSq(int r, int c)
     {
+        double probDiv = 0.0;
+        if (perfectMixing)
+        {
+            probDiv = probDivPM;
+        }
+        else
+        {
+            probDiv = probDivS;
+        }
+        
         if (grid[r][c] == 1)
         {
             double randNum = Math.random() * (probDeath + probDiv);
@@ -302,7 +281,7 @@ public class AgentModel
                     spatialDivide(r, c);
             }
         }
-        else if (grid[r][c] == 2)
+        else if (grid[r][c] == 2 || grid[r][c] == 3)
         {
             double randNum = Math.random();
             if (randNum < probDeath)
@@ -365,7 +344,17 @@ public class AgentModel
             }
         }
         else
-            grid[xCoord][yCoord] = 1;
+        {
+            double randNum2 = Math.random();
+            if (evolving && randNum2 < probEvolve)
+            {
+                grid[xCoord][yCoord] = 4;
+            }
+            else
+            {
+                grid[xCoord][yCoord] = 1;
+            }
+        }
     }
     
     public void pMDivide(int r, int c)
@@ -391,7 +380,17 @@ public class AgentModel
                 }
             }
             else
-                grid[randR][randC] = 1;
+            {
+                double randNum2 = Math.random();
+                if (evolving && randNum2 < probEvolve)
+                {
+                    grid[randR][randC] = 4;
+                }
+                else
+                {
+                    grid[randR][randC] = 1;
+                }
+            }
         }
     }
     
@@ -437,6 +436,23 @@ public class AgentModel
             for (int num : arr)
             {
                 if (num == 2)
+                {
+                    sum++;
+                }
+            }
+        }
+        
+        return sum;
+    }
+    
+    public int getMutants()
+    {
+        int sum = 0;
+        for (int[] arr : grid)
+        {
+            for (int num : arr)
+            {
+                if (num == 3 || num == 4)
                 {
                     sum++;
                 }

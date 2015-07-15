@@ -33,12 +33,12 @@ public class AgentModel
         
         probDeath = 0.01; //probability of cell dying (0.01 = 1% chance of death)
         probDivS = 0.3; //probability of cell dividing (0.97 = 97% chance of div)
-        probDivPM = 0.97;
+        probDivPM = 0.97; //change to be lower, use same for both
             //0.97 for PM straight line
             //0.3 for spatial semi-straight line
         probDifferentiate = 0.4; //probability of cell differentiating (0.4 = 40% chance of diff)
-        probEvolve = 0.001; //probability of diff cell evolving (0.01 = 1% chance of mut)
-        
+        probEvolve = 0.000; //probability of diff cell evolving (0.01 = 1% chance of mut)
+            //0.001
         perfectMixing = pM;
         differentiating = diff;
         evolving = evolve;

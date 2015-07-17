@@ -13,8 +13,7 @@ public class AgentModel
     public int numStartCells;
     
     private double probDeath;
-    private double probDivS;
-    private double probDivPM;
+    private double probDiv;
     private double probDifferentiate;
     private double probEvolve;
     
@@ -27,16 +26,13 @@ public class AgentModel
     public AgentModel(int gridX, int gridY, int numSC, boolean pM, boolean diff, boolean evolve)
     {
         x = gridX;
-        y = gridY; //Change y length if not using a square grid
+        y = gridY; //y length != x length if not using a square grid
         grid = new int[x][y];
         numStartCells = numSC;
         
         probDeath = 0.01; //probability of cell dying (0.01 = 1% chance of death)
-        probDivS = 0.3; //probability of cell dividing (0.97 = 97% chance of div)
-        probDivPM = 0.97; //change to be lower, use same for both
-            //0.97 for PM straight line
-            //0.3 for spatial semi-straight line
-        probDifferentiate = 0.4; //probability of cell differentiating (0.4 = 40% chance of diff)
+        probDiv = 0.8; //probability of cell dividing (0.97 = 97% chance of div)
+        probDifferentiate = 0.3; //probability of cell differentiating (0.4 = 40% chance of diff)
         probEvolve = 0.000; //probability of diff cell evolving (0.01 = 1% chance of mut)
             //0.001
         perfectMixing = pM;
@@ -256,16 +252,6 @@ public class AgentModel
     
     public void updateSq(int r, int c)
     {
-        double probDiv = 0.0;
-        if (perfectMixing)
-        {
-            probDiv = probDivPM;
-        }
-        else
-        {
-            probDiv = probDivS;
-        }
-        
         if (grid[r][c] == 1)
         {
             double randNum = Math.random() * (probDeath + probDiv);

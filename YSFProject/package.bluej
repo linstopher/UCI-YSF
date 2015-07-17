@@ -1,14 +1,11 @@
 #BlueJ package file
-dependency1.from=AgentModel
-dependency1.to=AgentModel
-dependency1.type=UsesDependency
 objectbench.height=100
 objectbench.width=284
 package.editor.height=321
 package.editor.width=487
 package.editor.x=38
 package.editor.y=22
-package.numDependencies=1
+package.numDependencies=0
 package.numTargets=1
 package.showExtends=true
 package.showUses=true
@@ -19,8 +16,8 @@ readme.editor.x=38
 readme.editor.y=22
 target1.editor.height=751
 target1.editor.width=668
-target1.editor.x=62
-target1.editor.y=35
+target1.editor.x=61
+target1.editor.y=44
 target1.height=50
 target1.name=AgentModel
 target1.naviview.expanded=false

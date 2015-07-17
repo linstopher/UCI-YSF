@@ -8,9 +8,9 @@ import java.io.*;
  */
 public class AgentModel
 {
-    public int[][] grid;
-    public int x, y;
-    public int numStartCells;
+    private int[][] grid;
+    private int x, y;
+    private int numStartCells;
     
     private double probDeath;
     private double probDiv;
@@ -104,7 +104,7 @@ public class AgentModel
             }
     }
     
-    public void saveData(String filename)
+    private void saveData(String filename)
     {
         try
         {
@@ -120,12 +120,12 @@ public class AgentModel
         }
     }
     
-    public String getData()
+    private String getData()
     {
         return data;
     }
     
-    public void createNewRoot(int numCells)
+    private void createNewRoot(int numCells)
     {
         int randX = x/2;
         int randY = x/2;
@@ -212,7 +212,7 @@ public class AgentModel
         }
     }
     
-    public void showGrid()
+    private void showGrid()
     {
         for (int[] numArray : grid)
         {
@@ -228,7 +228,7 @@ public class AgentModel
         }
     }
     
-    public void updateStage(int stageNum)
+    private void updateStage(int stageNum)
     {
         if (stageNum != 0)
         {
@@ -250,7 +250,7 @@ public class AgentModel
         System.out.println("\n============================================");
     }
     
-    public void updateSq(int r, int c)
+    private void updateSq(int r, int c)
     {
         if (grid[r][c] == 1)
         {
@@ -275,7 +275,7 @@ public class AgentModel
         }
     }
     
-    public void spatialDivide(int rootR, int rootC)
+    private void spatialDivide(int rootR, int rootC)
     {
         GridCoord[] coords = new GridCoord[9]; //List of 9 coordinates around root cancer cell
         int counter = 0;
@@ -343,7 +343,7 @@ public class AgentModel
         }
     }
     
-    public void pMDivide(int r, int c)
+    private void pMDivide(int r, int c)
     {
         int randR = (int)(Math.random() * y);
         int randC = (int)(Math.random() * x);
@@ -380,7 +380,7 @@ public class AgentModel
         }
     }
     
-    public int getTotalCancerCells()
+    private int getTotalCancerCells()
     {
         int sum = 0;
         for (int[] arr : grid)
@@ -397,7 +397,7 @@ public class AgentModel
         return sum;
     }
     
-    public int getStemCells()
+    private int getStemCells()
     {
         int sum = 0;
         for (int[] arr : grid)
@@ -414,7 +414,7 @@ public class AgentModel
         return sum;
     }
     
-    public int getDiffCells()
+    private int getDiffCells()
     {
         int sum = 0;
         for (int[] arr : grid)
@@ -431,7 +431,7 @@ public class AgentModel
         return sum;
     }
     
-    public int getMutants()
+    private int getMutants()
     {
         int sum = 0;
         for (int[] arr : grid)
@@ -448,7 +448,7 @@ public class AgentModel
         return sum;
     }
     
-    public double getThirdColumnData()
+    private double getThirdColumnData()
     {
         if (perfectMixing)
         {

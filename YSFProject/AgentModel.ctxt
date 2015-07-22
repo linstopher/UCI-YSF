@@ -1,8 +1,8 @@
 #BlueJ class context
 comment0.params=gridX\ gridY\ numSC\ pM\ diff\ evolve
 comment0.target=AgentModel(int,\ int,\ int,\ boolean,\ boolean,\ boolean)
-comment1.params=gridSize\ numStartCells\ perfectMixing\ differentiating\ evolving
-comment1.target=void\ main(int,\ int,\ boolean,\ boolean,\ boolean)
+comment1.params=perfectMixing\ differentiating
+comment1.target=void\ main(boolean,\ boolean)
 comment10.params=
 comment10.target=int\ getTotalCancerCells()
 comment11.params=

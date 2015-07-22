@@ -31,8 +31,8 @@ public class AgentModel
         numStartCells = numSC;
         
         probDeath = 0.01; //probability of cell dying (0.01 = 1% chance of death)
-        probDiv = 0.7; //probability of cell dividing (0.97 = 97% chance of div)
-        probDifferentiate = 0.3; //probability of cell differentiating (0.4 = 40% chance of diff)
+        probDiv = 0.75; //probability of cell dividing (0.97 = 97% chance of div)
+        probDifferentiate = 0.25; //probability of cell differentiating (0.4 = 40% chance of diff)
         probEvolve = 0.000; //probability of diff cell evolving (0.01 = 1% chance of mut)
             //0.001
         perfectMixing = pM;
@@ -44,9 +44,10 @@ public class AgentModel
         createNewRoot(numStartCells);
     }
     
-    public static void main(int gridSize, int numStartCells, boolean perfectMixing, boolean differentiating, boolean evolving)
+    public static void main(/*int gridSize, int numStartCells,*/ boolean perfectMixing, boolean differentiating)//, boolean evolving)
     {
-        AgentModel test = new AgentModel(gridSize, gridSize, numStartCells, perfectMixing, differentiating, evolving);
+        int gridSize = 100;
+        AgentModel test = new AgentModel(/*gridSize, gridSize, numStartCells,*/100, 100, 5, perfectMixing, differentiating, false);//evolving);
         if (perfectMixing)
         {
             System.out.println("PERFECT MIXING SIMULATION\n");

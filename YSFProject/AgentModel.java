@@ -31,7 +31,7 @@ public class AgentModel
         numStartCells = numSC;
         
         probDeath = 0.01; //probability of cell dying (0.01 = 1% chance of death)
-        probDiv = 0.8; //probability of cell dividing (0.97 = 97% chance of div)
+        probDiv = 0.7; //probability of cell dividing (0.97 = 97% chance of div)
         probDifferentiate = 0.3; //probability of cell differentiating (0.4 = 40% chance of diff)
         probEvolve = 0.000; //probability of diff cell evolving (0.01 = 1% chance of mut)
             //0.001

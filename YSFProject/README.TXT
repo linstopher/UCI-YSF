@@ -1,3 +1,4 @@
+LEGEND
 0 = Empty
 1 = Stem Cell (Y)
 2 = Differentiated Cell (Y)

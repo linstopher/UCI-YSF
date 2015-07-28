@@ -22,6 +22,9 @@ public class AgentModel
     private boolean evolving;
     
     private String data;
+    private int[] dataAvg;
+    private int numTrials;
+    private int numStages;
     
     public AgentModel(int gridX, int gridY, int numSC, boolean pM, boolean diff, boolean evolve)
     {
@@ -40,8 +43,9 @@ public class AgentModel
         evolving = evolve;
         
         data = "";
-        
-        createNewRoot(numStartCells);
+        numTrials = 10;
+        numStages = 10;
+        dataAvg = new int[numStages];
     }
     
     public static void main(/*int gridSize, int numStartCells,*/ boolean perfectMixing, boolean differentiating)//, boolean evolving)
@@ -50,18 +54,45 @@ public class AgentModel
         AgentModel test = new AgentModel(/*gridSize, gridSize, numStartCells,*/100, 100, 5, perfectMixing, differentiating, false);//evolving);
         if (perfectMixing)
         {
-            System.out.println("PERFECT MIXING SIMULATION\n");
+            System.out.println("PERFECT MIXING SIMULATION");
         }
         else
         {
-            System.out.println("SPATIAL SIMULATION\n");
+            System.out.println("SPATIAL SIMULATION");
         }
         
-        for (int i = 0; i <= 200; i++)
+        for (int n = 1; n <= test.numTrials; n++) //Number of trials
         {
-            test.updateStage(i);
+            for (int i = 0; i < test.numStages; i++) //Number of stages
+            {
+                test.updateStage(n, i);
+            }
+            test.createNewGrid();
         }
         
+        for (int n = 0; n < test.numStages; n++) //Avg total num cells for each stage
+        {
+            test.dataAvg[n] = test.dataAvg[n] / test.numTrials;
+        }
+        
+        System.out.println("\n============================================");
+        System.out.println("Data Averages");
+        System.out.print("[");
+        for (int i = 0; i < test.dataAvg.length; i++)
+        {
+            if (i != test.dataAvg.length-1)
+                System.out.print(test.dataAvg[i] + ", ");
+            else
+                System.out.print(test.dataAvg[i]);
+        }
+        System.out.println("]");
+        
+        test.saveData();
+    }
+    
+    private void saveData()
+    {
+        System.out.println("\n============================================");
         System.out.println("Save data? (Y/N)");
             Scanner kboard = new Scanner(System.in);
             boolean done = false;
@@ -92,11 +123,11 @@ public class AgentModel
                         filename += "PM";
                     else
                         filename += "S";
-                    filename += ("-" + gridSize);
+                    filename += ("-" + x);
                     //filename += System.currentTimeMillis();
                     //filename += "_" + test.probDeath;
                     //filename += "_" + test.probDiv;
-                test.saveData(filename);
+                saveToFile(filename);
                 System.out.println("Data saved to file named: " + filename);
             }
             else
@@ -105,7 +136,7 @@ public class AgentModel
             }
     }
     
-    private void saveData(String filename)
+    private void saveToFile(String filename)
     {
         try
         {
@@ -229,7 +260,19 @@ public class AgentModel
         }
     }
     
-    private void updateStage(int stageNum)
+    private void createNewGrid()
+    {
+        /*for (int[] numArray : grid)
+        {
+            for (int i = 0; i < numArray.length; i++)
+            {
+                numArray[i] = 0;
+            }
+        }*/
+        grid = new int[x][y];
+    }
+    
+    private void updateStage(int trialNum, int stageNum)
     {
         if (stageNum != 0)
         {
@@ -241,14 +284,30 @@ public class AgentModel
                 updateSq(randR, randC);
             }
         }
+        else
+        {
+            createNewRoot(numStartCells);
+            data += "\n";
+        }
+         
+        /*if (trialNum > 1 && stageNum == 0) //Add back in if don't want space between header and first set of data
+        {
+            data += "\n";
+        }*/
         
-        System.out.println("Stage " + stageNum);
+        System.out.println("\n============================================");
+        System.out.println("TRIAL " + trialNum);
+        System.out.println("STAGE " + stageNum);
             data += ("\n" + stageNum + " ");
         System.out.println("Total cells: " + getTotalCancerCells());
             data += ("" + getTotalCancerCells() + " " + getThirdColumnData() + " " + getStemCells() + " " + getDiffCells() + " " + getMutants());
-        System.out.println("Mutants: " + getMutants() + "\n");
+            
+            dataAvg[stageNum] += getTotalCancerCells();
+            
+        System.out.println("SCs: " + getStemCells() + " (" + ( (int)( ((double)getStemCells() / getTotalCancerCells()) *10000) /100.0) + "%)");
+        System.out.println("Diff: " + getDiffCells() + " (" + ( (int)( ((double)getDiffCells() / getTotalCancerCells()) *10000) /100.0) + "%)");
+        System.out.println("Mutants: " + getMutants() + " (" + ( (int)( ((double)getMutants() / getTotalCancerCells()) *10000) /100.0) + "%)" + "\n");
         showGrid();
-        System.out.println("\n============================================");
     }
     
     private void updateSq(int r, int c)

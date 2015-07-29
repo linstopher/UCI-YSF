@@ -22,7 +22,10 @@ public class AgentModel
     private boolean evolving;
     
     private String data;
-    private int[] dataAvg;
+    private int[] dataAvgTC;
+    private int[] dataAvgS;
+    private int[] dataAvgD;
+    private int[] dataAvgM;
     private int numTrials;
     private int numStages;
     
@@ -43,9 +46,12 @@ public class AgentModel
         evolving = evolve;
         
         data = "";
-        numTrials = 10;
-        numStages = 10;
-        dataAvg = new int[numStages];
+        numTrials = 100;
+        numStages = 1000;
+        dataAvgTC = new int[numStages];
+        dataAvgS = new int[numStages];
+        dataAvgD = new int[numStages];
+        dataAvgM = new int[numStages];
     }
     
     public static void main(/*int gridSize, int numStartCells,*/ boolean perfectMixing, boolean differentiating)//, boolean evolving)
@@ -72,20 +78,60 @@ public class AgentModel
         
         for (int n = 0; n < test.numStages; n++) //Avg total num cells for each stage
         {
-            test.dataAvg[n] = test.dataAvg[n] / test.numTrials;
+            test.dataAvgTC[n] = test.dataAvgTC[n] / test.numTrials;
+            test.dataAvgS[n] = test.dataAvgS[n] / test.numTrials;
+            test.dataAvgD[n] = test.dataAvgD[n] / test.numTrials;
+            test.dataAvgM[n] = test.dataAvgM[n] / test.numTrials;
         }
         
         System.out.println("\n============================================");
-        System.out.println("Data Averages");
-        System.out.print("[");
-        for (int i = 0; i < test.dataAvg.length; i++)
+        System.out.println("Data Averages:");
+        
+        System.out.print("Total Cell Count [");
+        for (int i = 0; i < test.dataAvgTC.length; i++)
         {
-            if (i != test.dataAvg.length-1)
-                System.out.print(test.dataAvg[i] + ", ");
+            if (i != test.dataAvgTC.length-1)
+                System.out.print(test.dataAvgTC[i] + ", ");
             else
-                System.out.print(test.dataAvg[i]);
+                System.out.print(test.dataAvgTC[i]);
         }
         System.out.println("]");
+        
+        System.out.print("Stem Cell Count [");
+        for (int i = 0; i < test.dataAvgS.length; i++)
+        {
+            if (i != test.dataAvgS.length-1)
+                System.out.print(test.dataAvgS[i] + ", ");
+            else
+                System.out.print(test.dataAvgS[i]);
+        }
+        System.out.println("]");
+        
+        System.out.print("Differentiated Cell Count [");
+        for (int i = 0; i < test.dataAvgD.length; i++)
+        {
+            if (i != test.dataAvgD.length-1)
+                System.out.print(test.dataAvgD[i] + ", ");
+            else
+                System.out.print(test.dataAvgD[i]);
+        }
+        System.out.println("]");
+        
+        System.out.print("Mutant Cell Count [");
+        for (int i = 0; i < test.dataAvgM.length; i++)
+        {
+            if (i != test.dataAvgM.length-1)
+                System.out.print(test.dataAvgM[i] + ", ");
+            else
+                System.out.print(test.dataAvgM[i]);
+        }
+        System.out.println("]");
+        
+        //test.data += "\n\n#Averages\n";
+        for (int i = 0; i < test.dataAvgTC.length; i++) // i = stageNum
+        {
+            test.data += i + " " + test.dataAvgTC[i] + " " + test.dataAvgS[i] + " " + test.dataAvgD[i] + " " + test.dataAvgM[i] + " " + "\n";
+        }
         
         test.saveData();
     }
@@ -113,7 +159,7 @@ public class AgentModel
             
             if (answer.equals("y") || answer.equals("yes"))
             {
-                String filename = "TumorModel-" ;
+                String filename = "AVG-TumorModel-" ;
                     if (differentiating)
                         filename += "diff-";
                     else
@@ -142,7 +188,7 @@ public class AgentModel
         {
             FileWriter fw = new FileWriter(filename + ".txt");
             BufferedWriter writer = new BufferedWriter(fw);
-            writer.write("#StageNum, CellCount, Sqrt/log, StemCount, DiffCount, MutantCount");
+            writer.write("#StageNum, TotalCellCount, StemCount, DiffCount, MutantCount\n");
             writer.write(getData());
             writer.close();
         }
@@ -287,7 +333,7 @@ public class AgentModel
         else
         {
             createNewRoot(numStartCells);
-            data += "\n";
+            //data += "\n"; //Reactivate for showing each trial data
         }
          
         /*if (trialNum > 1 && stageNum == 0) //Add back in if don't want space between header and first set of data
@@ -295,19 +341,23 @@ public class AgentModel
             data += "\n";
         }*/
         
-        System.out.println("\n============================================");
-        System.out.println("TRIAL " + trialNum);
-        System.out.println("STAGE " + stageNum);
-            data += ("\n" + stageNum + " ");
-        System.out.println("Total cells: " + getTotalCancerCells());
-            data += ("" + getTotalCancerCells() + " " + getThirdColumnData() + " " + getStemCells() + " " + getDiffCells() + " " + getMutants());
+        //System.out.println("\n============================================");
+        //System.out.println("TRIAL " + trialNum);
+        //System.out.println("STAGE " + stageNum);
+            //data += ("\n" + stageNum + " "); //Reactivate for showing each trial data
+        //System.out.println("Total cells: " + getTotalCancerCells());
+            //data += ("" + getTotalCancerCells() + " " + getThirdColumnData() + " " + getStemCells() + " " + getDiffCells() + " " + getMutants());
+            //Reactivate for showing each trial data
             
-            dataAvg[stageNum] += getTotalCancerCells();
+            dataAvgTC[stageNum] += getTotalCancerCells();
+            dataAvgS[stageNum] += getStemCells();
+            dataAvgD[stageNum] += getDiffCells();
+            dataAvgM[stageNum] += getMutants();
             
-        System.out.println("SCs: " + getStemCells() + " (" + ( (int)( ((double)getStemCells() / getTotalCancerCells()) *10000) /100.0) + "%)");
-        System.out.println("Diff: " + getDiffCells() + " (" + ( (int)( ((double)getDiffCells() / getTotalCancerCells()) *10000) /100.0) + "%)");
-        System.out.println("Mutants: " + getMutants() + " (" + ( (int)( ((double)getMutants() / getTotalCancerCells()) *10000) /100.0) + "%)" + "\n");
-        showGrid();
+        //System.out.println("SCs: " + getStemCells() + " (" + ( (int)( ((double)getStemCells() / getTotalCancerCells()) *10000) /100.0) + "%)");
+        //System.out.println("Diff: " + getDiffCells() + " (" + ( (int)( ((double)getDiffCells() / getTotalCancerCells()) *10000) /100.0) + "%)");
+        //System.out.println("Mutants: " + getMutants() + " (" + ( (int)( ((double)getMutants() / getTotalCancerCells()) *10000) /100.0) + "%)" + "\n");
+        //showGrid();
     }
     
     private void updateSq(int r, int c)

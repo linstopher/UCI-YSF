@@ -1,7 +1,7 @@
 #BlueJ package file
-objectbench.height=100
-objectbench.width=412
-package.editor.height=295
+objectbench.height=85
+objectbench.width=247
+package.editor.height=310
 package.editor.width=609
 package.editor.x=38
 package.editor.y=23
@@ -14,10 +14,10 @@ readme.editor.height=700
 readme.editor.width=900
 readme.editor.x=38
 readme.editor.y=23
-target1.editor.height=777
-target1.editor.width=1249
-target1.editor.x=31
-target1.editor.y=23
+target1.editor.height=649
+target1.editor.width=1232
+target1.editor.x=41
+target1.editor.y=45
 target1.height=50
 target1.name=AgentModel
 target1.naviview.expanded=false

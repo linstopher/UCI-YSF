@@ -130,7 +130,12 @@ public class AgentModel
         //test.data += "\n\n#Averages\n";
         for (int i = 0; i < test.dataAvgTC.length; i++) // i = stageNum
         {
-            test.data += i + " " + test.dataAvgTC[i] + " " + test.dataAvgS[i] + " " + test.dataAvgD[i] + " " + test.dataAvgM[i] + " " + "\n";
+            String SDRatio = "";
+            if (test.dataAvgD[i] != 0)
+                SDRatio = "" + (int)(((double)test.dataAvgS[i]/test.dataAvgD[i])*100)/100.0;
+            else
+                SDRatio = "-1";
+            test.data += i + " " + test.dataAvgTC[i] + " " + test.dataAvgS[i] + " " + test.dataAvgD[i] + " " + SDRatio + " " + test.dataAvgM[i] + " " + "\n";
         }
         
         test.saveData();
@@ -188,7 +193,7 @@ public class AgentModel
         {
             FileWriter fw = new FileWriter(filename + ".txt");
             BufferedWriter writer = new BufferedWriter(fw);
-            writer.write("#StageNum, TotalCellCount, StemCount, DiffCount, MutantCount\n");
+            writer.write("#StageNum, TotalCellCount, StemCount, DiffCount, S/D Ratio, MutantCount\n");
             writer.write(getData());
             writer.close();
         }
@@ -342,8 +347,8 @@ public class AgentModel
         }*/
         
         //System.out.println("\n============================================");
-        //System.out.println("TRIAL " + trialNum);
-        //System.out.println("STAGE " + stageNum);
+        System.out.println("TRIAL " + trialNum);
+        System.out.println("STAGE " + stageNum);
             //data += ("\n" + stageNum + " "); //Reactivate for showing each trial data
         //System.out.println("Total cells: " + getTotalCancerCells());
             //data += ("" + getTotalCancerCells() + " " + getThirdColumnData() + " " + getStemCells() + " " + getDiffCells() + " " + getMutants());

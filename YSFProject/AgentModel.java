@@ -28,6 +28,7 @@ public class AgentModel
     private int[] dataAvgM;
     private int[] dataAvgMS;
     private int[] dataAvgMD;
+    private double[] dataAvgMutProb;
     
     private int numTrials;
     private int numStages;
@@ -57,12 +58,13 @@ public class AgentModel
         dataAvgM = new int[numStages];
         dataAvgMS = new int[numStages];
         dataAvgMD = new int[numStages];
+        dataAvgMutProb = new double[numStages];
     }
     
-    public static void main(/*int gridSize, int numStartCells,*/ boolean perfectMixing, boolean differentiating)//, boolean evolving)
+    public static void runSim(boolean perfectMixing, boolean differentiating)
     {
         int gridSize = 100;
-        AgentModel test = new AgentModel(/*gridSize, gridSize, numStartCells,*/100, 100, 5, perfectMixing, differentiating, true);//evolving);
+        AgentModel test = new AgentModel(100, 100, 5, perfectMixing, differentiating, true);
         if (perfectMixing)
         {
             System.out.println("PERFECT MIXING SIMULATION");
@@ -89,6 +91,7 @@ public class AgentModel
             test.dataAvgM[n] = test.dataAvgM[n] / test.numTrials;
             test.dataAvgMS[n] = test.dataAvgMS[n] / test.numTrials;
             test.dataAvgMD[n] = test.dataAvgMD[n] / test.numTrials;
+            test.dataAvgMutProb[n] = ( (int)( ((double)test.dataAvgMutProb[n] / test.numTrials) *10000) /100.0);
         }
         
         System.out.println("\n============================================");
@@ -144,7 +147,7 @@ public class AgentModel
                 SDRatio = "-1";
             test.data += i + " " + test.dataAvgTC[i] + " " + test.dataAvgS[i] + " " + 
                         test.dataAvgD[i] + " " + SDRatio + " " + test.dataAvgM[i] + 
-                        " " + test.dataAvgMS[i] + " " + test.dataAvgMD[i] + " " +"\n";
+                        " " + test.dataAvgMS[i] + " " + test.dataAvgMD[i] + " " + test.dataAvgMutProb[i] + "\n";
         }
         
         test.saveData();
@@ -202,7 +205,7 @@ public class AgentModel
         {
             FileWriter fw = new FileWriter(filename + ".txt");
             BufferedWriter writer = new BufferedWriter(fw);
-            writer.write("#StageNum, TotalCellCount, StemCount, DiffCount, S/D Ratio, TotalMutant, MutantSC, MutantDiff\n");
+            writer.write("#StageNum, TotalCellCount, StemCount, DiffCount, S/D Ratio, TotalMutant, MutantSC, MutantDiff, ProbMutant\n");
             writer.write(getData());
             writer.close();
         }
@@ -369,6 +372,10 @@ public class AgentModel
             dataAvgM[stageNum] += getTotalMutants();
             dataAvgMS[stageNum] += getMutantSC();
             dataAvgMD[stageNum] += getMutantDiff();
+            if (getTotalMutants() > 0)
+            {
+                dataAvgMutProb[stageNum]++;
+            }
             
         //System.out.println("SCs: " + getStemCells() + " (" + ( (int)( ((double)getStemCells() / getTotalCancerCells()) *10000) /100.0) + "%)");
         //System.out.println("Diff: " + getDiffCells() + " (" + ( (int)( ((double)getDiffCells() / getTotalCancerCells()) *10000) /100.0) + "%)");
